@@ -32,6 +32,29 @@ test('posts identifier property is named id', async () => {
   expect(contentIds).toBeDefined()
 }, 100000)
 
+test('adding new and valid blog post works', async () => {
+  const newPost = {
+    title: 'Add valid blog post',
+    author: 'Blog author test',
+    url: 'http://test//blog',
+    likes: 9000,
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(newPost)
+    .expect(201)
+    .expect('Content-Type', /application\/json/)
+
+  const PostsAtEnd = await helper.postsInDb()
+  expect(PostsAtEnd).toHaveLength(helper.initialPosts.length + 1)
+
+  const contents = PostsAtEnd.map(posts => posts.title)
+  expect(contents).toContain(
+    'Add valid blog post'
+  )
+})
+
 afterAll(async () => {
   await mongoose.connection.close()
 })
