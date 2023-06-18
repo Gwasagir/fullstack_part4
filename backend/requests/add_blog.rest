@@ -2,9 +2,9 @@ POST http://localhost:3001/api/blogs
 Content-Type: application/json
 
 {
-    "title": "Add SECOND blog post with user root",
+    "title": "Add blog for admin",
     "author": "Blog author test",
     "url": "http://test//blog",
     "likes": 1,
-    "userId": "648f38e3ecf40205e359268a"
+    "userId": "648f4f3e363009798edab95a"
 }
