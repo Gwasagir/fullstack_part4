@@ -55,6 +55,25 @@ test('adding new and valid blog post works', async () => {
   )
 })
 
+test('adding post without likes defaults to 0', async () => {
+  const newPost = {
+    title: 'unliked post :(',
+    author: 'sandman',
+    url: 'http://test//blog_secret'
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(newPost)
+    .expect(201)
+    .expect('Content-Type', /application\/json/)
+
+  const contents = await helper.postsInDb()
+  const contentLikes = contents.map(posts => posts.likes)
+  const lastPostLike = contentLikes[contentLikes.length-1]
+  expect(lastPostLike).toBe(0)
+})
+
 afterAll(async () => {
   await mongoose.connection.close()
 })
