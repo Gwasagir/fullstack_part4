@@ -74,6 +74,28 @@ test('adding post without likes defaults to 0', async () => {
   expect(lastPostLike).toBe(0)
 })
 
+test('adding post without name or url responds with 400 bad request', async () => {
+  const newPostTitless = {
+    author: 'sandman',
+    url: 'http://test//blog_secret',
+    likes: 1
+  }
+  await api
+    .post('/api/blogs')
+    .send(newPostTitless)
+    .expect(400)
+
+  const newPostURLless = {
+    title: 'we got no url',
+    author: 'sandman',
+    likes: 1
+  }
+  await api
+    .post('/api/blogs')
+    .send(newPostURLless)
+    .expect(400)
+})
+
 afterAll(async () => {
   await mongoose.connection.close()
 })
