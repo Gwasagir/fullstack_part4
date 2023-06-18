@@ -39,6 +39,41 @@ describe('when there is initially one user in db', () => {
     expect(usernames).toContain(newUser.username)
   })
 
+  test('creation fails if username or password is missing or is too short', async () => {
+    const usersAtStart = await helper.usersInDb()
+
+    const newUser = {
+      username: '',
+      name: 'Matti Luukkainen',
+      password: 'salainen',
+    }
+
+    const result = await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(400)
+      .expect('Content-Type', /application\/json/)
+
+    expect(result.body.error).toContain('Username is too short!')
+
+    const newUser2 = {
+      username: 'maatti',
+      name: 'Matti Luukkainen',
+      password: 'sa',
+    }
+
+    const result2 = await api
+      .post('/api/users')
+      .send(newUser2)
+      .expect(400)
+      .expect('Content-Type', /application\/json/)
+
+    expect(result2.body.error).toContain('Password is too short!')
+
+    const usersAtEnd = await helper.usersInDb()
+    expect(usersAtEnd).toEqual(usersAtStart)
+  })
+
   test('creation fails with proper statuscode and message if username already taken', async () => {
     const usersAtStart = await helper.usersInDb()
 
@@ -60,6 +95,7 @@ describe('when there is initially one user in db', () => {
     expect(usersAtEnd).toEqual(usersAtStart)
   })
 })
+
 beforeEach(async () => {
   await Blog.deleteMany({})
 
@@ -92,11 +128,15 @@ describe('Getting/receiving blog posts', () => {
 
 describe('Adding of blog post or posts', () => {
   test('adding new and valid blog post works', async () => {
+    const userDB = await helper.usersInDb()
+    const userIds = userDB.map(user => user.id)
+
     const newPost = {
       title: 'Add valid blog post',
       author: 'Blog author test',
       url: 'http://test//blog',
       likes: 9000,
+      userId: userIds[0]
     }
 
     await api
@@ -115,10 +155,14 @@ describe('Adding of blog post or posts', () => {
   })
 
   test('adding post without likes defaults to 0', async () => {
+    const userDB = await helper.usersInDb()
+    const userIds = userDB.map(user => user.id)
+
     const newPost = {
       title: 'unliked post :(',
       author: 'sandman',
-      url: 'http://test//blog_secret'
+      url: 'http://test//blog_secret',
+      userId: userIds[0]
     }
 
     await api
@@ -134,10 +178,14 @@ describe('Adding of blog post or posts', () => {
   })
 
   test('adding post without name or url responds with 400 bad request', async () => {
+    const userDB = await helper.usersInDb()
+    const userIds = userDB.map(user => user.id)
+
     const newPostTitless = {
       author: 'sandman',
       url: 'http://test//blog_secret',
-      likes: 1
+      likes: 1,
+      userId: userIds[0]
     }
     await api
       .post('/api/blogs')
@@ -147,7 +195,8 @@ describe('Adding of blog post or posts', () => {
     const newPostURLless = {
       title: 'we got no url',
       author: 'sandman',
-      likes: 1
+      likes: 1,
+      userId: userIds[0]
     }
     await api
       .post('/api/blogs')
@@ -175,11 +224,15 @@ describe('Deleting or modifying blog posts', () => {
 })
 
 test('updating post with status cod 204 and new information', async () => {
+  const userDB = await helper.usersInDb()
+  const userIds = userDB.map(user => user.id)
+
   const updatedPost = {
     title: 'Updated post title',
     author: 'Blog author test',
     url: 'http://test//blog',
     likes: 9000,
+    userId: userIds[0]
   }
   const postsAtStart = await helper.postsInDb()
   const postToUpdate = postsAtStart[0]
