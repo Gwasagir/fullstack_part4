@@ -221,32 +221,32 @@ describe('Deleting or modifying blog posts', () => {
     const postTitles = postsAtEnd.map(r => r.title)
     expect(postTitles).not.toContain(postToDelete.title)
   })
-})
 
-test('updating post with status cod 204 and new information', async () => {
-  const userDB = await helper.usersInDb()
-  const userIds = userDB.map(user => user.id)
+  test('updating post with status code 204 and new information', async () => {
+    const userDB = await helper.usersInDb()
+    const userIds = userDB.map(user => user.id)
 
-  const updatedPost = {
-    title: 'Updated post title',
-    author: 'Blog author test',
-    url: 'http://test//blog',
-    likes: 9000,
-    userId: userIds[0]
-  }
-  const postsAtStart = await helper.postsInDb()
-  const postToUpdate = postsAtStart[0]
-  await api
-    .put(`/api/blogs/${postToUpdate.id}`)
-    .send(updatedPost)
-    .expect(200)
-    .expect('Content-Type', /application\/json/)
+    const updatedPost = {
+      title: 'Updated post title',
+      author: 'Blog author test',
+      url: 'http://test//blog',
+      likes: 9000,
+      userId: userIds[0]
+    }
+    const postsAtStart = await helper.postsInDb()
+    const postToUpdate = postsAtStart[0]
+    await api
+      .put(`/api/blogs/${postToUpdate.id}`)
+      .send(updatedPost)
+      .expect(200)
+      .expect('Content-Type', /application\/json/)
 
-  const PostsAtEnd = await helper.postsInDb()
-  const contents = PostsAtEnd[0].title
-  expect(contents).toContain(
-    'Updated post title'
-  )
+    const PostsAtEnd = await helper.postsInDb()
+    const contents = PostsAtEnd[0].title
+    expect(contents).toContain(
+      'Updated post title'
+    )
+  })
 })
 
 
