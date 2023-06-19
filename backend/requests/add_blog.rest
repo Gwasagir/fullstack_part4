@@ -1,8 +1,9 @@
 POST http://localhost:3001/api/blogs
 Content-Type: application/json
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiaWQiOiI2NDhmNGYzZTM2MzAwOTc5OGVkYWI5NWEiLCJpYXQiOjE2ODcxNTYzNDB9.t6y7fR-8afx6bVhH-lP_roNulVk-dWigW76GusU6xHY
 
 {
-    "title": "Add blog for admin",
+    "title": "Add blog for admin with Token Authorization",
     "author": "Blog author test",
     "url": "http://test//blog",
     "likes": 1,
